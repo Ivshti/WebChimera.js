@@ -20,7 +20,9 @@ JsVlcPlayer::JsVlcPlayer( const v8::Local<v8::Function>& renderCallback ) :
         "--no-drop-late-frames", // This might fix the uglyness when dropping frames
         //"--prefer-system-codecs", // optimizes a bit on OS X but not worth the risk
         // no deinterlace
-        "--no-video-title-show" // not needed?
+        "--no-video-title-show", // not needed?
+	"--ffmpeg-hw",
+	"--avcodec-hw=any"
     };
 
     _libvlc = libvlc_new( sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args );
