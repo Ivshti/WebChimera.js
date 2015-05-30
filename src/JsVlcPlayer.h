@@ -11,6 +11,12 @@
 #include <libvlc_wrapper/vlc_player.h>
 #include <libvlc_wrapper/vlc_vmem.h>
 
+template <typename T, typename... Args>
+auto make_unique(Args&&... args) -> std::unique_ptr<T>
+{
+    return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
+}
+
 class JsVlcPlayer :
     public node::ObjectWrap,
     private vlc::basic_vmem_wrapper,

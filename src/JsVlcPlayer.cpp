@@ -358,10 +358,10 @@ unsigned JsVlcPlayer::video_format_cb( char* chroma,
 {
     switch( _pixelFormat ) {
         case PixelFormat::RV32:
-            _videoFrame = std::make_unique<RV32VideoFrame>();
+            _videoFrame = make_unique<RV32VideoFrame>();
             break;
         case PixelFormat::I420:
-            _videoFrame = std::make_unique<I420VideoFrame>();
+            _videoFrame = make_unique<I420VideoFrame>();
             break;
     }
 
@@ -688,7 +688,7 @@ void JsVlcPlayer::jsSetPixelFormat( v8::Local<v8::String> property,
 
     Local<Integer> jsPixelFormat = Local<Integer>::Cast( value );
     if( !jsPixelFormat.IsEmpty() ) {
-        switch( jsPixelFormat->Value() ) {
+        switch( (PixelFormat)jsPixelFormat->Value() ) {
             case PixelFormat::RV32:
                 jsPlayer->_pixelFormat = PixelFormat::RV32;
                 break;
