@@ -108,6 +108,9 @@ void JsVlcPlayer::LibvlcEvent::process( JsVlcPlayer* jsPlayer )
         case libvlc_MediaPlayerNothingSpecial:
             callback = CB_MediaPlayerNothingSpecial;
             break;
+        case libvlc_MediaStateChanged:
+            callback = CB_MediaStateChanged;
+            break;
         case libvlc_MediaPlayerOpening:
             callback = CB_MediaPlayerOpening;
             break;
@@ -626,6 +629,8 @@ void JsVlcPlayer::initJsApi()
     SET_CALLBACK_PROPERTY( vlcPlayerTemplate, "onEncounteredError", CB_MediaPlayerEncounteredError );
     SET_CALLBACK_PROPERTY( vlcPlayerTemplate, "onEndReached", CB_MediaPlayerEndReached );
     SET_CALLBACK_PROPERTY( vlcPlayerTemplate, "onStopped", CB_MediaPlayerStopped );
+
+    SET_CALLBACK_PROPERTY( vlcPlayerTemplate, "onStateChanged", CB_MediaStateChanged );
 
     SET_CALLBACK_PROPERTY( vlcPlayerTemplate, "onTimeChanged", CB_MediaPlayerTimeChanged );
     SET_CALLBACK_PROPERTY( vlcPlayerTemplate, "onPositionChanged", CB_MediaPlayerPositionChanged );
