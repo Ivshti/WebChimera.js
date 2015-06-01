@@ -323,7 +323,25 @@ JsVlcPlayer::JsVlcPlayer() :
     _libvlc( nullptr ), _pixelFormat( PixelFormat::I420 ),
     _jsRawFrameBuffer( nullptr )
 {
-    _libvlc = libvlc_new( 0, nullptr );
+    // https://wiki.videolan.org/VLC_command-line_help/
+    // Find a way to avoid reading for subtitles in the same folder; this behavior should be explicit
+    const char * const vlc_args[] = {
+        "--no-media-library", // not needed?
+        "--no-spu",
+        "--no-stats",
+        "--no-osd",
+        "--sout-mux-caching","3000",
+        "--network-caching","3000",
+        "--no-drop-late-frames", // This might fix the uglyness when dropping frames
+        //"--prefer-system-codecs", // optimizes a bit on OS X but not worth the risk
+        // no deinterlace
+        "--no-video-title-show", // not needed?
+        //"--ffmpeg-hw",
+        //"--avcodec-hw=any"
+    };
+
+    _libvlc = libvlc_new( sizeof(vlc_args) / sizeof(vlc_args[0]), vlc_args );
+
     assert( _libvlc );
     if( _player.open( _libvlc ) ) {
         _player.register_callback( this );
