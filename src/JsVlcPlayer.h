@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <deque>
+#include <vector>
 
 #include <v8.h>
 #include <node.h>
@@ -97,7 +98,7 @@ public:
                                Callbacks_e callback );
 
 private:
-    JsVlcPlayer();
+    JsVlcPlayer(const v8::Local<v8::Object>& args);
     ~JsVlcPlayer();
 
     struct AsyncData;

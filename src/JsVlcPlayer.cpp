@@ -319,11 +319,27 @@ void* JsVlcPlayer::I420VideoFrame::video_lock_cb( char* jsRawFrameBuffer, void**
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-JsVlcPlayer::JsVlcPlayer() :
+JsVlcPlayer::JsVlcPlayer(  const v8::Local<v8::Object>& libvlc_args_obj  ) :
     _libvlc( nullptr ), _pixelFormat( PixelFormat::I420 ),
     _jsRawFrameBuffer( nullptr )
 {
-    _libvlc = libvlc_new( 0, nullptr );
+    using namespace v8;
+    std::vector<char*> vlcArgs;
+    /*
+    if (libvlc_args_obj->IsArray()) {
+        Local<Array> libvlc_args = Local<Array>::Cast(libvlc_args_obj);
+        int len = libvlc_args->Length();
+        for (int i=0; i!=len; i++) {
+            if (libvlc_args->Get(i)->IsString()) {
+                String::Utf8Value data(libvlc_args->Get(i)->ToString()); 
+                vlcArgs.push_back(*data);
+            };
+        }
+    }
+    */
+
+    _libvlc = libvlc_new( vlcArgs.size(), vlcArgs.data() );
+    
     assert( _libvlc );
     if( _player.open( _libvlc ) ) {
         _player.register_callback( this );
@@ -657,13 +673,14 @@ void JsVlcPlayer::jsCreate( const v8::FunctionCallbackInfo<v8::Value>& args )
     HandleScope scope( isolate );
 
     if( args.IsConstructCall() ) {
-        JsVlcPlayer* jsPlayer = new JsVlcPlayer;
+        JsVlcPlayer* jsPlayer = new JsVlcPlayer(Local<Object>::Cast(args[0]));
         jsPlayer->Wrap( args.This() );
         args.GetReturnValue().Set( args.This() );
     } else {
         Local<Function> constructor =
             Local<Function>::New( isolate, _jsConstructor );
-        args.GetReturnValue().Set( constructor->NewInstance( 0, nullptr ) );
+        Local<Value> argv[] = { args[0] };
+        args.GetReturnValue().Set( constructor->NewInstance( 1, argv ) );
     }
 }
 
