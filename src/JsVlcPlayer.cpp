@@ -3,6 +3,7 @@
 #include <string.h>
 
 v8::Persistent<v8::Function> JsVlcPlayer::_jsConstructor;
+std::vector<std::string> JsVlcPlayer::_libvlcArgs;
 
 ///////////////////////////////////////////////////////////////////////////////
 struct JsVlcPlayer::AsyncData
@@ -321,7 +322,10 @@ JsVlcPlayer::JsVlcPlayer() :
     _libvlc( nullptr ), _pixelFormat( PixelFormat::I420 ),
     _jsRawFrameBuffer( nullptr )
 {
-    _libvlc = libvlc_new( 0, nullptr );
+    std::vector<char*> args_raw;
+    for (int i=0; i!=_libvlcArgs.size(); i++) { args_raw.push_back((char*)_libvlcArgs[i].c_str()); };
+    _libvlc = libvlc_new( args_raw.size(), args_raw.data() );
+
     assert( _libvlc );
     if( _player.open( _libvlc ) ) {
         _player.register_callback( this );
@@ -653,6 +657,18 @@ void JsVlcPlayer::jsCreate( const v8::FunctionCallbackInfo<v8::Value>& args )
 
     Isolate* isolate = Isolate::GetCurrent();
     HandleScope scope( isolate );
+
+    if( args[0]->IsArray() ) {
+        Handle<Array> argsArr = Handle<Array>::Cast(args[0]);
+
+        _libvlcArgs.empty();
+        int len = argsArr->Length();
+        for (int i=0; i!=len; i++) {
+            if (argsArr->Get(i)->IsString()) {
+                _libvlcArgs.push_back(std::string(*v8::String::Utf8Value(argsArr->Get(i)->ToString())));
+            };
+        };
+    }
 
     if( args.IsConstructCall() ) {
         JsVlcPlayer* jsPlayer = new JsVlcPlayer;

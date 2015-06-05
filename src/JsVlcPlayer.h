@@ -133,6 +133,7 @@ private:
 
 private:
     static v8::Persistent<v8::Function> _jsConstructor;
+    static std::vector<std::string> _libvlcArgs;
 
     libvlc_instance_t* _libvlc;
     vlc::player _player;
