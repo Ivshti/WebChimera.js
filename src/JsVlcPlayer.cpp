@@ -9,6 +9,8 @@
 #include "JsVlcSubtitles.h"
 #include "JsVlcPlaylist.h"
 
+#include <iostream> // temp
+
 const char* JsVlcPlayer::callbackNames[] =
 {
     "FrameSetup",
@@ -394,6 +396,7 @@ void JsVlcPlayer::initJsApi( const v8::Handle<v8::Object>& exports )
     SET_RW_PROPERTY( instanceTemplate, "mute", &JsVlcPlayer::muted, &JsVlcPlayer::setMuted );
 
     NODE_SET_PROTOTYPE_METHOD( constructorTemplate, "play", jsPlay );
+    NODE_SET_PROTOTYPE_METHOD( constructorTemplate, "setVout", setVout );
     SET_METHOD( constructorTemplate, "pause", &JsVlcPlayer::pause );
     SET_METHOD( constructorTemplate, "togglePause", &JsVlcPlayer::togglePause );
     SET_METHOD( constructorTemplate, "stop",  &JsVlcPlayer::stop );
@@ -449,7 +452,7 @@ JsVlcPlayer::JsVlcPlayer( v8::Local<v8::Object>& thisObject, const v8::Local<v8:
 
     if( _libvlc && _player.open( _libvlc ) ) {
         _player.register_callback( this );
-        vlc::basic_vmem_wrapper::open( &_player.basic_player() );
+        //vlc::basic_vmem_wrapper::open( &_player.basic_player() );
     } else {
         assert( false );
     }
@@ -991,6 +994,7 @@ void JsVlcPlayer::setVolume( unsigned volume )
     player().audio().set_volume( volume );
 }
 
+
 bool JsVlcPlayer::muted()
 {
     return player().audio().is_muted();
@@ -1000,6 +1004,7 @@ void JsVlcPlayer::setMuted( bool mute )
 {
     player().audio().set_mute( mute );
 }
+
 
 void JsVlcPlayer::play()
 {
@@ -1059,4 +1064,18 @@ v8::Local<v8::Object> JsVlcPlayer::subtitles()
 v8::Local<v8::Object> JsVlcPlayer::playlist()
 {
     return v8::Local<v8::Object>::New( v8::Isolate::GetCurrent(), _jsPlaylist );
+}
+
+
+void JsVlcPlayer::setVout( const v8::FunctionCallbackInfo<v8::Value>& args )
+{
+    JsVlcPlayer* jsPlayer = ObjectWrap::Unwrap<JsVlcPlayer>( args.Holder() );
+
+    libvlc_media_player_t* mp = jsPlayer->player().get_mp();
+
+    if( args.Length() ==  1 ) {
+        std::cout << "setting nsobject to pointer";
+        libvlc_media_player_set_nsobject(mp, node::Buffer::Data(args[0]));
+    }
+
 }

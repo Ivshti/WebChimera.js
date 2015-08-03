@@ -63,6 +63,8 @@ public:
                                const v8::PropertyCallbackInfo<void>& info,
                                Callbacks_e callback );
 
+    static void setVout( const v8::FunctionCallbackInfo<v8::Value>& args );
+
     bool playing();
     double length();
     unsigned state();
