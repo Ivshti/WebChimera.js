@@ -10,3 +10,8 @@ before_install:
   - sudo cp -R "/Volumes/vlc-$VLC_VER/VLC.app" /Applications
 
 script: npm install
+
+addons:
+  artifacts:
+    paths:
+    - ./build/Release/WebChimera.js.node

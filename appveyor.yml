@@ -4,4 +4,8 @@ install:
   - git submodule update --init --recursive
   - npm install
 
+artifacts:
+  - path: WebChimera.js\build\Release\WebChimera.js.node
+    name: WebChimera.js.node
+
 build: off
